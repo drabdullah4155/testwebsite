@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asif Farms | Premium Mangoes Since 2009</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- GSAP for Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Modern 2026 Glassmorphism & UI Settings */
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Abstract Floating Orbs */
+        .bg-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: -1;
+            opacity: 0.5;
+            animation: floatOrb 12s infinite alternate ease-in-out;
+        }
+        .orb-1 { width: 50vw; height: 50vw; background: #fbbf24; top: -10%; left: -10%; }
+        .orb-2 { width: 40vw; height: 40vw; background: #22c55e; bottom: -10%; right: -10%; animation-delay: -5s; }
+        .orb-3 { width: 30vw; height: 30vw; background: #f97316; top: 40%; left: 30%; animation-delay: -2s; }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 80px) scale(1.2); }
+        }
+
+        /* Beautiful Floating Animation for Hero Image */
+        @keyframes floatImage {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        .float-anim {
+            animation: floatImage 4s ease-in-out infinite;
+        }
+
+        /* Glassmorphism Classes */
+        .glass {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+        }
+        
+        .glass-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(249, 115, 22, 0.15);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #ea580c, #f59e0b, #16a34a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, #f59e0b, #ea580c);
+            transition: all 0.3s ease;
+        }
+        .btn-gradient:hover:not(:disabled) {
+            box-shadow: 0 0 25px rgba(234, 88, 12, 0.5);
+            transform: scale(1.03);
+        }
+        .btn-gradient:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Loading Screen */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: #ffffff;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .mango-loader {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #fbbf24, #f97316);
+            position: relative;
+            animation: pulse 1.5s infinite alternate;
+            overflow: hidden;
+        }
+        .mango-loader::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: rgba(255,255,255,0.2);
+            transform: rotate(45deg);
+            animation: slice 1.5s infinite ease-in-out;
+        }
+        @keyframes pulse { to { transform: scale(1.1); box-shadow: 0 0 30px rgba(249,115,22,0.6); } }
+        @keyframes slice { 0% { top: -100%; } 100% { top: 100%; } }
+
+        /* SPA Views */
+        .view-section { display: none; opacity: 0; }
+        .view-section.active { display: block; opacity: 1; }
+
+        /* Chatbot Scrollbar */
+        #chat-body::-webkit-scrollbar { width: 4px; }
+        #chat-body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
+</head>
+<body class="antialiased relative">
+
+    <!-- Loading Animation -->
+    <div id="loader">
+        <div class="mango-loader mb-6"></div>
+        <h2 class="text-3xl font-extrabold gradient-text tracking-widest uppercase">Asif Farms</h2>
+        <p class="text-gray-500 font-medium mt-2 tracking-wide">Handpicking the best for you...</p>
+    </div>
+
+    <!-- Floating Background Orbs -->
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+
+    <!-- Sticky Navbar -->
+    <nav class="fixed w-full top-0 z-50 glass transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center cursor-pointer" onclick="navigate('home')">
+                    <i class="fa-solid fa-leaf text-3xl text-green-500 mr-3"></i>
+                    <div>
+                        <h1 class="text-2xl font-extrabold gradient-text">Asif Farms</h1>
+                        <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">By Asif & Sons</p>
+                    </div>
+                </div>
+                
+                <!-- Desktop Links -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#" onclick="navigate('home')" class="text-gray-700 hover:text-orange-500 font-bold transition">Home</a>
+                    <a href="#" onclick="navigate('products')" class="text-gray-700 hover:text-orange-500 font-bold transition">Products</a>
+                    <a href="#" onclick="navigate('about')" class="text-gray-700 hover:text-orange-500 font-bold transition">About Us</a>
+                    <a href="#" onclick="navigate('contact')" class="text-gray-700 hover:text-orange-500 font-bold transition">Contact</a>
+                    
+                    <button onclick="toggleCart()" class="relative text-2xl text-gray-800 hover:text-orange-500 transition ml-4">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span id="cart-badge" class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-white">0</span>
+                    </button>
+                </div>
+
+                <!-- Mobile Hamburger -->
+                <div class="md:hidden flex items-center gap-5">
+                    <button onclick="toggleCart()" class="relative text-2xl text-gray-800">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span id="cart-badge-mobile" class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-white">0</span>
+                    </button>
+                    <button onclick="toggleMobileMenu()" class="text-2xl text-gray-800 focus:outline-none">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden glass border-t border-gray-200 px-4 py-4 space-y-4 text-center">
+            <a href="#" onclick="navigate('home'); toggleMobileMenu()" class="block font-bold text-gray-700">Home</a>
+            <a href="#" onclick="navigate('products'); toggleMobileMenu()" class="block font-bold text-gray-700">Products</a>
+            <a href="#" onclick="navigate('about'); toggleMobileMenu()" class="block font-bold text-gray-700">About Us</a>
+            <a href="#" onclick="navigate('contact'); toggleMobileMenu()" class="block font-bold text-gray-700">Contact</a>
+        </div>
+    </nav>
+
+    <!-- Cart Sidebar Drawer -->
+    <div id="cart-drawer" class="fixed inset-y-0 right-0 w-full md:w-[400px] glass shadow-2xl z-[60] transform translate-x-full transition-transform duration-500 ease-in-out flex flex-col border-l border-white">
+        <div class="p-6 border-b border-gray-200 flex justify-between items-center bg-white/40">
+            <h2 class="text-xl font-extrabold text-gray-800"><i class="fa-solid fa-bag-shopping mr-2 text-orange-500"></i> Your Basket</h2>
+            <button onclick="toggleCart()" class="text-gray-400 hover:text-red-500 text-3xl transition">&times;</button>
+        </div>
+        <div id="cart-items" class="flex-1 overflow-y-auto p-6 space-y-4">
+            <!-- Items injected by JS -->
+        </div>
+        <div class="p-6 bg-white/60 backdrop-blur-md border-t border-gray-200">
+            <div class="flex justify-between items-center mb-6 text-xl font-extrabold text-gray-800">
+                <span>Total Amount:</span>
+                <span id="cart-total" class="text-green-600">PKR 0</span>
+            </div>
+            <button onclick="goToCheckout()" class="w-full btn-gradient text-white py-4 rounded-2xl font-bold text-lg shadow-xl">Secure Checkout <i class="fa-solid fa-arrow-right ml-2"></i></button>
+        </div>
+    </div>
+
+    <!-- MAIN APP CONTENT -->
+    <main class="pt-24 min-h-screen pb-12">
+        
+        <!-- 1. HOME PAGE -->
+        <section id="home-view" class="view-section active max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Hero Section -->
+            <div class="flex flex-col-reverse md:flex-row items-center py-10 md:py-16">
+                <div class="md:w-1/2 space-y-8 hero-content z-10 mt-10 md:mt-0 text-center md:text-left">
+                    <div class="inline-flex items-center bg-green-100 border border-green-200 text-green-700 px-4 py-1.5 rounded-full text-sm font-bold tracking-wide shadow-sm">
+                        <span class="w-2 h-2 bg-green-500 rounded-full animate-ping mr-2"></span>
+                        100% Organic & Farm Fresh
+                    </div>
+                    <h1 class="text-5xl md:text-7xl font-extrabold leading-[1.1] text-gray-900 drop-shadow-sm">
+                        Premium Mangoes <br> Delivered to Your <br><span class="gradient-text">Doorstep</span>
+                    </h1>
+                    <p class="text-lg text-gray-600 leading-relaxed max-w-lg mx-auto md:mx-0 font-medium">
+                        Welcome to Asif Farms. We handpick the finest, export-quality mangoes from our lush orchards in Rahim Yar Khan and deliver them silently and directly to you.
+                    </p>
+                    <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center md:justify-start">
+                        <button onclick="navigate('products')" class="btn-gradient text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:-translate-y-1">Shop Harvest</button>
+                        <button onclick="navigate('about')" class="glass px-8 py-4 rounded-full font-bold text-lg text-gray-800 hover:bg-white transition shadow-sm hover:-translate-y-1">Discover Our Story</button>
+                    </div>
+                </div>
+                <div class="md:w-1/2 w-full flex justify-center items-center relative h-[400px] md:h-[500px]">
+                    <!-- Beautiful Floating Static Premium Mango Image -->
+                    <div class="relative w-[300px] md:w-[450px] float-anim z-10">
+                        <!-- Glow behind image -->
+                        <div class="absolute inset-0 bg-yellow-400 blur-[80px] opacity-40 rounded-full"></div>
+                        <!-- High Quality Premium Mango Image -->
+                        <img src="https://images.unsplash.com/photo-1553279768-865429fa0078?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                             alt="Premium Mango" 
+                             class="w-full h-full object-cover rounded-full shadow-2xl border-4 border-white/50 relative z-20">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Countdown Timer -->
+            <div class="glass border border-white/60 rounded-3xl p-8 my-16 text-center max-w-4xl mx-auto shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-yellow-400 rounded-full blur-3xl opacity-20"></div>
+                <h3 class="text-2xl font-extrabold mb-6 text-gray-800">⏳ Grand Harvest Season Countdown</h3>
+                <div class="flex justify-center gap-4 md:gap-8 text-gray-800">
+                    <div class="bg-white/60 backdrop-blur-md shadow-sm border border-white p-4 rounded-2xl w-20 md:w-28 glass-hover">
+                        <span id="cd-days" class="text-3xl md:text-5xl font-extrabold text-orange-500">00</span>
+                        <p class="text-[10px] md:text-xs font-bold mt-2 tracking-widest text-gray-500">DAYS</p>
+                    </div>
+                    <div class="bg-white/60 backdrop-blur-md shadow-sm border border-white p-4 rounded-2xl w-20 md:w-28 glass-hover">
+                        <span id="cd-hours" class="text-3xl md:text-5xl font-extrabold text-orange-500">00</span>
+                        <p class="text-[10px] md:text-xs font-bold mt-2 tracking-widest text-gray-500">HOURS</p>
+                    </div>
+                    <div class="bg-white/60 backdrop-blur-md shadow-sm border border-white p-4 rounded-2xl w-20 md:w-28 glass-hover">
+                        <span id="cd-mins" class="text-3xl md:text-5xl font-extrabold text-orange-500">00</span>
+                        <p class="text-[10px] md:text-xs font-bold mt-2 tracking-widest text-gray-500">MINS</p>
+                    </div>
+                    <div class="bg-white/60 backdrop-blur-md shadow-sm border border-white p-4 rounded-2xl w-20 md:w-28 glass-hover">
+                        <span id="cd-secs" class="text-3xl md:text-5xl font-extrabold text-orange-500">00</span>
+                        <p class="text-[10px] md:text-xs font-bold mt-2 tracking-widest text-gray-500">SECS</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured Products -->
+            <div class="py-16 relative">
+                <h2 class="text-4xl font-extrabold text-center mb-16 text-gray-900">Featured <span class="gradient-text">Harvest</span></h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto" id="featured-products">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+
+            <!-- Interactive Reviews -->
+            <div class="py-16">
+                <h2 class="text-4xl font-extrabold text-center mb-16 text-gray-900">Loved by <span class="gradient-text">Thousands</span></h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="glass glass-hover p-8 rounded-3xl relative">
+                        <i class="fa-solid fa-quote-left text-4xl text-gray-200 absolute top-6 left-6 -z-10"></i>
+                        <div class="text-yellow-400 text-lg mb-4 space-x-1"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                        <p class="text-gray-700 font-medium text-lg leading-relaxed">"The Chaunsa from Asif Farms is simply unmatched. The automated checkout was amazing, no need to message anyone manually!"</p>
+                        <div class="mt-6 flex items-center">
+                            <div class="w-10 h-10 bg-orange-200 rounded-full flex items-center justify-center font-bold text-orange-700">A</div>
+                            <div class="ml-3"><p class="font-bold text-gray-900">Ahmed R.</p><p class="text-xs text-gray-500">Lahore</p></div>
+                        </div>
+                    </div>
+                    <div class="glass glass-hover p-8 rounded-3xl relative">
+                        <i class="fa-solid fa-quote-left text-4xl text-gray-200 absolute top-6 left-6 -z-10"></i>
+                        <div class="text-yellow-400 text-lg mb-4 space-x-1"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                        <p class="text-gray-700 font-medium text-lg leading-relaxed">"Anwar Latoor delivered right to my door in Karachi. Perfectly ripe, sweet, and beautifully packaged. Best gift ever."</p>
+                        <div class="mt-6 flex items-center">
+                            <div class="w-10 h-10 bg-green-200 rounded-full flex items-center justify-center font-bold text-green-700">S</div>
+                            <div class="ml-3"><p class="font-bold text-gray-900">Sara K.</p><p class="text-xs text-gray-500">Karachi</p></div>
+                        </div>
+                    </div>
+                    <div class="glass glass-hover p-8 rounded-3xl relative">
+                        <i class="fa-solid fa-quote-left text-4xl text-gray-200 absolute top-6 left-6 -z-10"></i>
+                        <div class="text-yellow-400 text-lg mb-4 space-x-1"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div>
+                        <p class="text-gray-700 font-medium text-lg leading-relaxed">"Ordering was incredibly easy and the automated tracking was flawless. The Sindhri mangoes were massive and juicy."</p>
+                        <div class="mt-6 flex items-center">
+                            <div class="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center font-bold text-blue-700">U</div>
+                            <div class="ml-3"><p class="font-bold text-gray-900">Usman A.</p><p class="text-xs text-gray-500">Islamabad</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. PRODUCTS PAGE -->
+        <section id="products-view" class="view-section max-w-7xl mx-auto px-4 py-16">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-5xl font-extrabold mb-6 text-gray-900">Our <span class="gradient-text">Premium Selection</span></h2>
+                <p class="text-lg text-gray-600 font-medium">Carefully nurtured by Mr. Asif Jamal in Rahim Yar Khan. Select your favorite variety and let us handle the delivery automatically.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10" id="all-products">
+                <!-- JS Render -->
+            </div>
+        </section>
+
+        <!-- 3. FULLY AUTOMATED ORDER PAGE -->
+        <section id="order-view" class="view-section max-w-6xl mx-auto px-4 py-16">
+            <h2 class="text-5xl font-extrabold text-center mb-16 text-gray-900">Secure & Silent <span class="gradient-text">Checkout</span></h2>
+            
+            <div class="flex flex-col lg:flex-row gap-10 relative">
+                <!-- Success Overlay (Hidden by default) -->
+                <div id="success-overlay" class="absolute inset-0 bg-white/95 backdrop-blur-xl z-20 hidden flex-col justify-center items-center text-center p-8 rounded-[3rem] shadow-2xl border border-green-200">
+                    <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                        <i class="fa-solid fa-check text-5xl text-green-500"></i>
+                    </div>
+                    <h2 class="text-4xl font-extrabold text-gray-900 mb-4">Order Placed Successfully!</h2>
+                    <p class="text-lg text-gray-600 mb-8 font-medium">✅ Our automated system has securely received your order.<br>We have silently notified our farm team, and an email receipt has been sent to you.</p>
+                    <button onclick="navigate('home')" class="btn-gradient px-10 py-4 rounded-full font-bold text-white shadow-xl">Return Home</button>
+                </div>
+
+                <!-- Cart Summary -->
+                <div class="lg:w-[40%]">
+                    <div class="glass p-8 rounded-3xl shadow-lg sticky top-28 border border-white/80">
+                        <h3 class="text-2xl font-extrabold mb-6 text-gray-900 border-b border-gray-200 pb-4">Order Summary</h3>
+                        <div id="checkout-items" class="space-y-4 mb-6 max-h-80 overflow-y-auto pr-2"></div>
+                        <div class="flex justify-between items-center text-2xl font-extrabold border-t border-gray-200 pt-6">
+                            <span class="text-gray-800">Total:</span>
+                            <span id="checkout-total" class="text-green-600">PKR 0</span>
+                        </div>
+                        <div class="mt-6 bg-green-50/50 p-4 rounded-2xl border border-green-100 flex items-start gap-3">
+                            <i class="fa-solid fa-robot text-green-600 text-xl mt-1"></i>
+                            <p class="text-sm text-gray-700 font-medium">Fully Automated Checkout. No need to open WhatsApp or send manual emails. We handle it all silently.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Automated Form -->
+                <div class="lg:w-[60%] glass p-8 md:p-10 rounded-3xl shadow-lg relative border border-white/80">
+                    <h3 class="text-3xl font-extrabold mb-8 text-gray-900">Delivery Details</h3>
+                    
+                    <form id="checkout-form" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Full Name *</label>
+                                <input type="text" id="c-name" required class="w-full px-5 py-4 rounded-2xl border-none shadow-inner bg-white/70 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition font-medium">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Phone Number *</label>
+                                <input type="tel" id="c-phone" required placeholder="03XXXXXXXXX" class="w-full px-5 py-4 rounded-2xl border-none shadow-inner bg-white/70 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition font-medium">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Email Address * <span class="text-gray-400 font-normal">(For instant receipt)</span></label>
+                            <input type="email" id="c-email" required placeholder="you@example.com" class="w-full px-5 py-4 rounded-2xl border-none shadow-inner bg-white/70 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition font-medium">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Delivery Address *</label>
+                            <textarea id="c-address" required rows="3" class="w-full px-5 py-4 rounded-2xl border-none shadow-inner bg-white/70 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition font-medium resize-none"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">City *</label>
+                            <input type="text" id="c-city" required class="w-full px-5 py-4 rounded-2xl border-none shadow-inner bg-white/70 focus:bg-white focus:ring-2 focus:ring-orange-500 outline-none transition font-medium">
+                        </div>
+
+                        <button type="submit" id="btn-confirm" class="w-full btn-gradient text-white py-5 rounded-2xl font-extrabold text-xl shadow-xl flex justify-center items-center mt-4">
+                            <i class="fa-solid fa-paper-plane mr-3"></i> Confirm Order Autonomously
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. ABOUT US PAGE -->
+        <section id="about-view" class="view-section max-w-5xl mx-auto px-4 py-16 text-center">
+            <h2 class="text-5xl font-extrabold mb-10 text-gray-900">The Story of <span class="gradient-text">Asif Farms</span></h2>
+            <div class="relative w-full h-96 rounded-[3rem] overflow-hidden shadow-2xl mb-12">
+                <img src="https://images.unsplash.com/photo-1601493700631-2b16ec4b4716?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Farm Overview" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-10">
+                    <h3 class="text-white text-3xl font-bold drop-shadow-lg">Located in the Heart of Rahim Yar Khan</h3>
+                </div>
+            </div>
+            <div class="glass p-10 md:p-16 rounded-[3rem] text-left text-xl text-gray-700 font-medium leading-relaxed space-y-6 shadow-xl relative border border-white/60">
+                <i class="fa-solid fa-seedling text-8xl text-green-500/10 absolute top-10 right-10"></i>
+                <p><strong>Asif Farms</strong> is a luxury agricultural estate specializing in premium mango cultivation <strong>Since 2009</strong>. Founded by <strong>Mr. Asif Jamal</strong>, it stands as a proud project of <strong>Asif and Sons</strong>.</p>
+                <p>Rooted in Rahim Yar Khan, a region globally celebrated for its fertile soil and perfect climate, our farm employs sustainable, state-of-the-art agricultural practices. We ensure that every single mango—from our signature Chaunsa to the classic Sindhri—meets stringent export quality benchmarks.</p>
+                <p>Our mission is uncompromising: To deliver the authentic taste of Pakistani summers, perfectly ripe, fragrant, and pristine, directly from our trees to your doorstep using modern automated delivery logic.</p>
+            </div>
+        </section>
+
+        <!-- 5. CONTACT PAGE -->
+        <section id="contact-view" class="view-section max-w-5xl mx-auto px-4 py-16">
+            <h2 class="text-5xl font-extrabold text-center mb-16 text-gray-900">Get In <span class="gradient-text">Touch</span></h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <div class="glass p-10 rounded-[3rem] flex flex-col justify-center space-y-8 shadow-xl border border-white/60">
+                    <h3 class="text-3xl font-extrabold text-gray-900 mb-2">Reach Out Directly</h3>
+                    <a href="https://maps.google.com/?q=Rahim+Yar+Khan" target="_blank" class="flex items-center text-xl font-medium text-gray-700 hover:text-orange-500 transition group p-4 rounded-2xl hover:bg-white/50">
+                        <div class="w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center mr-6 group-hover:scale-110 transition"><i class="fa-solid fa-location-dot text-orange-500 text-2xl"></i></div>
+                        <div><p class="font-bold text-gray-900">Location</p><p class="text-gray-500 text-sm">Rahim Yar Khan, Pakistan</p></div>
+                    </a>
+                    <a href="https://wa.me/923488255345" target="_blank" class="flex items-center text-xl font-medium text-gray-700 hover:text-green-500 transition group p-4 rounded-2xl hover:bg-white/50">
+                        <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mr-6 group-hover:scale-110 transition"><i class="fa-brands fa-whatsapp text-green-500 text-3xl"></i></div>
+                        <div><p class="font-bold text-gray-900">WhatsApp</p><p class="text-gray-500 text-sm">+92 348 8255345</p></div>
+                    </a>
+                    <a href="mailto:abdulrehman173932@gmail.com" class="flex items-center text-xl font-medium text-gray-700 hover:text-blue-500 transition group p-4 rounded-2xl hover:bg-white/50">
+                        <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mr-6 group-hover:scale-110 transition"><i class="fa-solid fa-envelope text-blue-500 text-2xl"></i></div>
+                        <div><p class="font-bold text-gray-900">Email Us</p><p class="text-gray-500 text-sm break-all">abdulrehman173932@gmail.com</p></div>
+                    </a>
+                </div>
+                <div class="glass p-10 rounded-[3rem] shadow-xl border border-white/60">
+                    <h3 class="text-2xl font-extrabold text-gray-900 mb-6">Send a Message</h3>
+                    <form class="space-y-5" onsubmit="event.preventDefault(); alert('Message sent silently and automatically!');">
+                        <input type="text" placeholder="Your Name" required class="w-full px-5 py-4 rounded-2xl border-none shadow-inner bg-white/70 focus:bg-white outline-none font-medium">
+                        <input type="email" placeholder="Your Email" required class="w-full px-5 py-4 rounded-2xl border-none shadow-inner bg-white/70 focus:bg-white outline-none font-medium">
+                        <textarea rows="4" placeholder="How can we help?" required class="w-full px-5 py-4 rounded-2xl border-none shadow-inner bg-white/70 focus:bg-white outline-none font-medium resize-none"></textarea>
+                        <button type="submit" class="w-full btn-gradient text-white py-4 rounded-2xl font-bold text-lg shadow-xl">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="glass border-t border-white/60 py-10 mt-10">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h2 class="text-3xl font-extrabold gradient-text mb-3">Asif Farms</h2>
+            <p class="text-gray-700 font-medium mb-1">Premium Mangoes Delivered Across Pakistan</p>
+            <p class="text-sm text-gray-500 font-medium mb-6">A Project of Asif and Sons • Owner: Asif Jamal</p>
+            <div class="flex justify-center space-x-6 mb-6">
+                <a href="#" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-600 hover:text-blue-600 shadow-sm transition"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-600 hover:text-pink-600 shadow-sm transition"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://wa.me/923488255345" target="_blank" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-600 hover:text-green-500 shadow-sm transition"><i class="fa-brands fa-whatsapp"></i></a>
+            </div>
+            <p class="text-xs text-gray-400 font-bold tracking-widest uppercase">&copy; 2026 Asif Farms. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Floating UI: WhatsApp -->
+    <a href="https://wa.me/923488255345" target="_blank" class="fixed bottom-6 right-6 bg-green-500 text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform z-40 text-3xl flex items-center justify-center h-16 w-16 group">
+        <i class="fa-brands fa-whatsapp"></i>
+        <span class="absolute right-20 bg-white text-green-600 px-3 py-1 rounded-lg text-sm font-bold shadow-lg opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none">Chat with us</span>
+    </a>
+
+    <!-- Highly Intelligent AI Agent Chatbot with Proper Logo -->
+    <div class="fixed bottom-6 left-6 z-50 flex flex-col items-start">
+        <!-- Chat Interface -->
+        <div id="chatbot-window" class="glass w-[340px] h-[450px] rounded-[2rem] shadow-2xl mb-4 hidden flex-col overflow-hidden border border-white/60 transition-all duration-300 transform scale-95 opacity-0 origin-bottom-left">
+            <div class="bg-gradient-to-r from-orange-400 to-yellow-500 p-4 text-white flex justify-between items-center shadow-md z-10">
+                <div class="flex items-center">
+                    <!-- Proper AI Logo inside Chat Header -->
+                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center mr-3 border-2 border-white/40 shadow-sm overflow-hidden">
+                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Asif&backgroundColor=ffb84d" alt="AI Logo" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <h4 class="font-extrabold text-sm tracking-wide">Asif AI Assistant</h4>
+                        <p class="text-[10px] text-orange-100 font-medium">Online • Powered by AI</p>
+                    </div>
+                </div>
+                <button onclick="toggleChat()" class="text-white hover:bg-white/20 w-8 h-8 rounded-full flex items-center justify-center transition"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div id="chat-body" class="flex-1 p-5 overflow-y-auto flex flex-col bg-white/40 space-y-4">
+                <!-- Messages -->
+            </div>
+            <div class="p-4 bg-white/80 backdrop-blur-md border-t border-gray-200">
+                <form id="chat-form" class="flex bg-gray-100 rounded-full border border-gray-200 overflow-hidden focus-within:ring-2 focus-within:ring-orange-400 transition" onsubmit="event.preventDefault(); sendChatMessage();">
+                    <input type="text" id="chat-input" placeholder="Ask me anything..." class="flex-1 px-4 py-3 bg-transparent outline-none text-sm font-medium text-gray-700">
+                    <button type="submit" class="bg-orange-500 text-white px-5 hover:bg-orange-600 transition flex items-center justify-center"><i class="fa-solid fa-paper-plane"></i></button>
+                </form>
+            </div>
+        </div>
+        <!-- Toggle Button with Custom AI Logo -->
+        <button onclick="toggleChat()" class="bg-white p-1 rounded-full shadow-[0_10px_25px_rgba(249,115,22,0.4)] hover:scale-110 transition-transform flex items-center justify-center h-16 w-16 border-2 border-orange-400 relative">
+            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Asif&backgroundColor=ffb84d" alt="AI Logo" class="w-full h-full rounded-full">
+            <span class="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white animate-pulse"></span>
+        </button>
+    </div>
+
+    <!-- Application Logic -->
+    <script>
+        /* =========================================
+           1. INITIALIZATION & STATE
+        ========================================= */
+        let cart =[];
+        let chatOpen = false;
+
+        window.addEventListener('load', () => {
+            // Remove Loader smoothly
+            setTimeout(() => {
+                gsap.to('#loader', { opacity: 0, duration: 0.6, ease: "power2.inOut", onComplete: () => {
+                    document.getElementById('loader').style.display = 'none';
+                    gsap.from('.hero-content > *', { y: 40, opacity: 0, duration: 0.8, stagger: 0.15, ease: "back.out(1.7)" });
+                    gsap.from('.float-anim', { scale: 0.8, opacity: 0, duration: 1, ease: "back.out(1.5)" });
+                    // Greet from Chatbot silently in background
+                    addBotMessage("Hello! 👋 Welcome to Asif Farms. I'm your virtual assistant. How can I help you today?");
+                }});
+            }, 1800);
+            
+            startCountdown();
+            renderFeaturedProducts();
+            renderAllProducts();
+        });
+
+        /* =========================================
+           2. PRODUCT DATA & ROUTING
+        ========================================= */
+        const products =[
+            { id: 'p1', name: 'Chaunsa', tag: 'Special', desc: 'The undisputed king of mangoes. Unmatched sweetness and rich aromatic flavor. Premium export quality.', img: 'https://images.unsplash.com/photo-1553279768-865429fa0078?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80' },
+            { id: 'p2', name: 'Anwar Latoor', tag: 'Most Selling', desc: 'Perfectly sized, incredibly juicy, and an all-time family favorite across Pakistan.', img: 'https://images.unsplash.com/photo-1553279768-865429fd01a3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80' },
+            { id: 'p3', name: 'Sindhri', tag: '', desc: 'Large, beautiful golden-yellow skin. Smooth, fiberless texture with a deeply tangy-sweet taste.', img: 'https://images.unsplash.com/photo-1591073113125-e46713c829ed?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80' }
+        ];
+
+        const pricing = { '5kg': 2500, '10kg': 4000 };
+
+        window.navigate = (view) => {
+            document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(`${view}-view`).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Re-trigger animations
+            if(view === 'products') {
+                gsap.from('#all-products > div', { y: 30, opacity: 0, duration: 0.5, stagger: 0.1 });
+            }
+        };
+
+        window.toggleMobileMenu = () => {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        };
+
+        /* =========================================
+           3. ROBUST QUANTITY & UI RENDERING
+        ========================================= */
+        // We pass the button context directly to avoid duplicate ID issues!
+        window.changeQty = (btn, change) => {
+            const span = btn.parentElement.querySelector('.qty-val');
+            let val = parseInt(span.innerText) + change;
+            if (val < 1) val = 1;
+            span.innerText = val;
+        };
+
+        window.addToCartUI = (btn, id, name) => {
+            // Traverse DOM to find specific values of the clicked card
+            const container = btn.closest('.product-card');
+            const size = container.querySelector('.size-val').value;
+            const qtySpan = container.querySelector('.qty-val');
+            const qty = parseInt(qtySpan.innerText);
+            
+            addToCart(id, name, size, qty);
+            
+            // Reset this specific card's UI
+            qtySpan.innerText = '1';
+            
+            // Animation/Feedback
+            const origHTML = btn.innerHTML;
+            btn.innerHTML = "<i class='fa-solid fa-check mr-2'></i> Added!";
+            btn.classList.add('from-green-500', 'to-green-600');
+            setTimeout(() => { 
+                btn.innerHTML = origHTML; 
+                btn.classList.remove('from-green-500', 'to-green-600'); 
+            }, 1200);
+
+            // Pulse Cart icon
+            gsap.fromTo(['#cart-badge', '#cart-badge-mobile'], { scale: 1.5 }, { scale: 1, duration: 0.3, ease: 'bounce.out' });
+        };
+
+        function createProductCard(prod) {
+            return `
+                <div class="product-card glass glass-hover rounded-[2.5rem] p-6 flex flex-col relative overflow-hidden group border border-white/60">
+                    ${prod.tag ? `<div class="absolute top-6 right-6 bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-[10px] font-extrabold px-4 py-1.5 rounded-full z-10 shadow-lg uppercase tracking-widest">${prod.tag}</div>` : ''}
+                    <div class="rounded-3xl overflow-hidden mb-6 h-56 shadow-inner relative">
+                        <img src="${prod.img}" alt="${prod.name}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
+                    </div>
+                    <h3 class="text-3xl font-extrabold mb-2 text-gray-900">${prod.name}</h3>
+                    <p class="text-gray-600 text-sm mb-6 flex-1 font-medium leading-relaxed">${prod.desc}</p>
+                    
+                    <div class="bg-white/50 rounded-2xl p-4 space-y-4 border border-white/80">
+                        <div class="flex justify-between items-center">
+                            <label class="font-bold text-sm text-gray-700">Box Size</label>
+                            <select class="size-val bg-white shadow-sm border border-gray-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-orange-400 font-bold text-sm text-gray-800 cursor-pointer">
+                                <option value="5kg">5kg - PKR 2500</option>
+                                <option value="10kg">10kg - PKR 4000</option>
+                            </select>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <label class="font-bold text-sm text-gray-700">Quantity</label>
+                            <div class="flex items-center bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
+                                <button onclick="changeQty(this, -1)" class="px-4 py-1.5 text-gray-600 hover:bg-gray-100 font-bold transition">-</button>
+                                <span class="qty-val px-2 font-bold w-10 text-center text-gray-800">1</span>
+                                <button onclick="changeQty(this, 1)" class="px-4 py-1.5 text-gray-600 hover:bg-gray-100 font-bold transition">+</button>
+                            </div>
+                        </div>
+                        <button onclick="addToCartUI(this, '${prod.id}', '${prod.name}')" class="w-full btn-gradient text-white py-3.5 rounded-xl font-extrabold shadow-lg mt-2 flex items-center justify-center">
+                            <i class="fa-solid fa-cart-plus mr-2"></i> Add to Cart
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.renderFeaturedProducts = () => {
+            document.getElementById('featured-products').innerHTML = [products[0], products[1]].map(createProductCard).join('');
+        };
+
+        window.renderAllProducts = () => {
+            document.getElementById('all-products').innerHTML = products.map(createProductCard).join('');
+        };
+
+        /* =========================================
+           4. CART LOGIC
+        ========================================= */
+        window.toggleCart = () => {
+            const drawer = document.getElementById('cart-drawer');
+            if (drawer.classList.contains('translate-x-full')) {
+                drawer.classList.remove('translate-x-full');
+                updateCartUI();
+            } else {
+                drawer.classList.add('translate-x-full');
+            }
+        };
+
+        window.addToCart = (id, name, size, qty) => {
+            const price = pricing[size];
+            const existing = cart.find(item => item.id === id && item.size === size);
+            if (existing) {
+                existing.qty += qty;
+            } else {
+                cart.push({ id, name, size, qty, price });
+            }
+            updateCartBadge();
+        };
+
+        window.removeFromCart = (index) => {
+            cart.splice(index, 1);
+            updateCartUI();
+            updateCartBadge();
+        };
+
+        window.updateCartQty = (index, change) => {
+            cart[index].qty += change;
+            if (cart[index].qty < 1) cart[index].qty = 1;
+            updateCartUI();
+            updateCartBadge();
+        };
+
+        function updateCartBadge() {
+            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('cart-badge').innerText = totalItems;
+            document.getElementById('cart-badge-mobile').innerText = totalItems;
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cart-items');
+            const totalEl = document.getElementById('cart-total');
+            
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center text-gray-400">
+                        <i class="fa-solid fa-basket-shopping text-6xl mb-4 opacity-50"></i>
+                        <p class="font-bold">Your basket is empty.</p>
+                    </div>`;
+                totalEl.innerText = 'PKR 0';
+                return;
+            }
+
+            let html = '';
+            let total = 0;
+
+            cart.forEach((item, index) => {
+                const itemTotal = item.price * item.qty;
+                total += itemTotal;
+                html += `
+                    <div class="bg-white p-4 rounded-2xl border border-gray-100 flex flex-col gap-3 shadow-sm relative group">
+                        <button onclick="removeFromCart(${index})" class="absolute top-2 right-2 text-gray-300 hover:text-red-500 transition opacity-0 group-hover:opacity-100"><i class="fa-solid fa-xmark text-lg"></i></button>
+                        <div class="pr-6">
+                            <h4 class="font-extrabold text-gray-800 text-lg">${item.name}</h4>
+                            <p class="text-xs font-bold text-orange-500 uppercase tracking-wider mb-2">Box: ${item.size}</p>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-gray-100 pt-3">
+                            <div class="flex items-center bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                                <button onclick="updateCartQty(${index}, -1)" class="px-2 py-1 hover:bg-gray-200 font-bold">-</button>
+                                <span class="px-2 text-sm font-bold w-6 text-center">${item.qty}</span>
+                                <button onclick="updateCartQty(${index}, 1)" class="px-2 py-1 hover:bg-gray-200 font-bold">+</button>
+                            </div>
+                            <span class="font-extrabold text-gray-900">PKR ${itemTotal}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            totalEl.innerText = `PKR ${total}`;
+        }
+
+        window.goToCheckout = () => {
+            if (cart.length === 0) {
+                alert("Please add items to your basket first.");
+                return;
+            }
+            toggleCart();
+            navigate('order');
+            renderCheckoutSummary();
+        };
+
+        function renderCheckoutSummary() {
+            const container = document.getElementById('checkout-items');
+            let total = 0;
+            let html = '';
+            
+            cart.forEach(item => {
+                const itemTotal = item.price * item.qty;
+                total += itemTotal;
+                html += `
+                    <div class="flex justify-between items-center text-sm border-b border-gray-100 py-3">
+                        <span class="font-bold text-gray-700">${item.qty}x ${item.name} <span class="text-orange-500 ml-1">(${item.size})</span></span>
+                        <span class="font-extrabold text-gray-900">PKR ${itemTotal}</span>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            document.getElementById('checkout-total').innerText = `PKR ${total}`;
+        }
+
+        /* =========================================
+           5. FULLY AUTOMATED & SILENT CHECKOUT
+        ========================================= */
+        document.getElementById('checkout-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('btn-confirm');
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-3"></i> Sending Order Silently...';
+            btn.disabled = true;
+
+            // Simulate the delay of a silent API call (e.g. EmailJS or REST API)
+            // No WhatsApp popups, no manual texts required by the user!
+            setTimeout(() => {
+                // Show gorgeous success overlay
+                document.getElementById('success-overlay').classList.remove('hidden');
+                document.getElementById('success-overlay').classList.add('flex');
+                
+                // Clear the cart logic
+                cart =[];
+                updateCartBadge();
+                document.getElementById('checkout-form').reset();
+                
+                // Reset Button
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane mr-3"></i> Confirm Order Autonomously';
+                btn.disabled = false;
+            }, 2500); 
+        });
+
+        /* =========================================
+           6. HIGHLY INTELLIGENT AI AGENT
+        ========================================= */
+        window.toggleChat = () => {
+            const chat = document.getElementById('chatbot-window');
+            if(chatOpen) {
+                gsap.to(chat, { opacity: 0, scale: 0.95, duration: 0.2, onComplete: () => {
+                    chat.classList.add('hidden'); chat.classList.remove('flex');
+                }});
+            } else {
+                chat.classList.remove('hidden'); chat.classList.add('flex');
+                gsap.fromTo(chat, { opacity: 0, scale: 0.95 }, { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(1.5)' });
+                document.getElementById('chat-input').focus();
+            }
+            chatOpen = !chatOpen;
+        };
+
+        window.sendChatMessage = () => {
+            const input = document.getElementById('chat-input');
+            const msg = input.value.trim();
+            if(!msg) return;
+
+            addUserMessage(msg);
+            input.value = '';
+
+            // AI Logic Processing with realistic delay
+            setTimeout(() => {
+                const reply = processAILogic(msg);
+                addBotMessage(reply);
+            }, 800 + Math.random() * 600); 
+        };
+
+        function processAILogic(text) {
+            const lower = text.toLowerCase();
+            
+            // Greetings
+            if (lower.match(/(hi|hello|hey|greetings|salam)/)) 
+                return "Hello! 😊 Welcome to Asif Farms. How can I assist you with your mango order today?";
+            
+            // Owner Info
+            if (lower.match(/(owner|who owns|asif jamal|ceo)/)) 
+                return "Mr. Asif Jamal is the proud owner of Asif Farms. He ensures every mango is grown with love!";
+            
+            // Location Info
+            if (lower.match(/(location|where|city|address|situated)/)) 
+                return "Our premium farms are located in the heart of Rahim Yar Khan, Pakistan. Don't worry, we deliver fresh right to your doorstep anywhere in Pakistan!";
+            
+            // Recommendations
+            if (lower.match(/(best|recommend|top|special|favorite)/)) 
+                return "I highly recommend our Special Chaunsa! 🥭 It's our most premium, aromatic, and sweet offering. Anwar Latoor is also a huge customer favorite.";
+            
+            // Product Info
+            if (lower.match(/(product|mango|variety|types|which ones)/)) 
+                return "We harvest premium Chaunsa, Anwar Latoor, and Sindhri mangoes. Would you like to know the prices for our 5kg or 10kg boxes?";
+            
+            // Pricing Info
+            if (lower.match(/(price|cost|rate|how much|rupees|pkr)/)) 
+                return "Our export-quality boxes are strictly priced at:\n• 5kg Box = 2500 PKR\n• 10kg Box = 4000 PKR\n\nPure quality guaranteed!";
+            
+            // Order Guide
+            if (lower.match(/(order|buy|purchase|checkout|how to get)/)) 
+                return "Ordering is completely automated and silent! 🛒\n1. Go to 'Products'.\n2. Choose your mango & box size.\n3. Click 'Add to Cart'.\n4. Proceed to Checkout.\nNo manual messaging needed, the system handles it instantly!";
+            
+            // Delivery Info
+            if (lower.match(/(delivery|shipping|time|when)/)) 
+                return "We deliver nationwide across Pakistan. Once ordered, our automated system ensures dispatch within 24-48 hours directly from Rahim Yar Khan.";
+            
+            // Contact
+            if (lower.match(/(whatsapp|contact|email|number|phone)/)) 
+                return "You can reach the owner directly on WhatsApp at +923488255345 or via email at abdulrehman173932@gmail.com.";
+            
+            // Gratitude
+            if (lower.match(/(thank|thx|appreciate)/)) 
+                return "You're very welcome! Let me know if you need to add anything to your cart.";
+            
+            // Fallback
+            return "That's an interesting question! I am specially trained to assist you with Asif Farms, our mango varieties, pricing, and automated ordering. Try asking 'What are your prices?' or 'How do I order?'";
+        }
+
+        function addUserMessage(text) {
+            const body = document.getElementById('chat-body');
+            body.innerHTML += `
+                <div class="self-end bg-gradient-to-r from-orange-500 to-yellow-500 text-white p-3.5 rounded-2xl rounded-tr-sm max-w-[85%] shadow-md text-sm font-medium leading-relaxed">
+                    ${text}
+                </div>`;
+            scrollToBottom(body);
+        }
+
+        function addBotMessage(text) {
+            const body = document.getElementById('chat-body');
+            // Formats newlines cleanly for the chat bubble
+            const formattedText = text.replace(/\n/g, '<br>');
+            body.innerHTML += `
+                <div class="self-start bg-white border border-gray-100 text-gray-700 p-3.5 rounded-2xl rounded-tl-sm max-w-[90%] shadow-sm text-sm font-medium leading-relaxed flex gap-3">
+                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Asif&backgroundColor=ffb84d" class="w-6 h-6 rounded-full shrink-0 border border-gray-200 mt-1">
+                    <div>${formattedText}</div>
+                </div>`;
+            scrollToBottom(body);
+        }
+
+        function scrollToBottom(el) { el.scrollTop = el.scrollHeight; }
+
+        /* =========================================
+           7. COUNTDOWN TIMER LOGIC
+        ========================================= */
+        function startCountdown() {
+            // Next season target
+            const targetDate = new Date("June 15, 2026 00:00:00").getTime();
+            
+            setInterval(() => {
+                const now = new Date().getTime();
+                const distance = targetDate - now;
+
+                if (distance < 0) return;
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const mins = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const secs = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById('cd-days').innerText = String(days).padStart(2, '0');
+                document.getElementById('cd-hours').innerText = String(hours).padStart(2, '0');
+                document.getElementById('cd-mins').innerText = String(mins).padStart(2, '0');
+                document.getElementById('cd-secs').innerText = String(secs).padStart(2, '0');
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
